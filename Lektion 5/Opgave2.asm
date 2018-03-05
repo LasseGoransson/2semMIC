@@ -25,21 +25,22 @@ RESET:
   ; PORTB setup
   	out 	DDRB,R16 			; PORTB = output R16 is high from line 8
 
-    ldi r18,0xff
-    out PORTB,R18
+    ldi r18,0xff ; R18 = 255
+    out PORTB,R18 ; Sluk alle segmenter i displayet
 
-    ldi R20,0
-    ldi r29,255
+    ldi R20,0 ; R20 indeholder displayets værdi og starter som nul
+    ldi r29,255 ; r29 indeholder pin konfiguration og starter som FF
     rjmp	LOOP ; Start loop
 
 
 
 
 
-    LOOP:
+    LOOP: ; Loop
 
     in R30,PINC ; Get pins
 
+		; Start debounce delay
     LDI r23,250
     DELAY1:
 
@@ -54,6 +55,7 @@ RESET:
 
     DEC R23
     BRNE DELAY1
+		; Slut debounce delay
 
     in R31,PINC ; Get pins
     AND r30,r31
@@ -64,12 +66,12 @@ RESET:
     ldi R17,0x00
     or R30,R17
     breq LOOP
-    ; Kontakt aktiv
+    ; en eller flere kontakter aktiv
 
-    cp r29,r31
+    cp r29,r31 ; Kontroller om konfiguration har ændret sig fornyligt
     breq loop
 
-    mov r29,r31
+    mov r29,r31 ; Gem den nye konfiguration
 
     CPI R20,0 ; Start
     breq SHOWA
